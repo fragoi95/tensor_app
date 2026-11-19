@@ -4,7 +4,7 @@ Aplicación interactiva de mecánica de medios continuos para visualizar el tens
 
 **Autor:** Francisco Goitia · francisco.goitia@upc.edu
 
-## Abrir la aplicación
+## Aplicación online
 
 https://fragoi95.github.io/tensor_app/
 
