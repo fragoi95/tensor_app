@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tensor de tensiones de Cauchy · Laboratorio 3D</title>
+<style>
+:root{color-scheme:dark;--bg:#08111e;--panel:#111e2c;--panel2:#152536;--border:#284052;--text:#edf5ff;--muted:#9db0c4;--blue:#65c9ed;--gold:#ffc75f;--red:#fa7e88;--teal:#57d6aa;--purple:#c99bf8}
+*{box-sizing:border-box}body{background:radial-gradient(circle at 75% -30%,#1b3b50 0,#091420 43%,#070f19 100%);color:var(--text);margin:0;font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.shell{max-width:1330px;margin:auto;padding:26px 24px 42px}.eyebrow{font-size:11px;letter-spacing:2.6px;color:#91cfe5;font-weight:750}.head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:8px 0 20px}.head h1{font-size:clamp(24px,3vw,37px);line-height:1.12;margin:4px 0 8px;letter-spacing:-1px}.sub{color:var(--muted);margin:0}.pill{background:#1a3543;border:1px solid #31576a;border-radius:30px;padding:8px 13px;color:#bbdce9;white-space:nowrap;font-size:12px}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px}.side,.stage,.panel{background:linear-gradient(160deg,rgba(23,43,60,.98),rgba(12,25,39,.98));border:1px solid var(--border);border-radius:17px;box-shadow:0 8px 28px #0002}.side{padding:18px}.side h2,.stage h2{font-size:14px;margin:0 0 4px;letter-spacing:.15px}.hint{color:var(--muted);font-size:12px;margin:0 0 14px}.stress-row{padding:8px 0 6px;border-bottom:1px solid #263848}.stress-row-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;gap:12px}.math{font-family:Cambria,"Times New Roman",serif;font-size:17px}.unit{font-size:10px;color:#8da8b9}.num{display:flex;align-items:center;gap:5px}.stress-row input[type=number]{width:86px;background:#081726;color:#eaf5ff;border:1px solid #3a586b;padding:5px 8px;border-radius:7px;font-size:13px;text-align:right}.stress-row input[type=range],.angle-row input[type=range]{width:100%;accent-color:var(--blue);height:16px;cursor:pointer}.subheading{font-size:11px;letter-spacing:1.6px;font-weight:750;color:#85a7bb;margin:20px 0 12px}.presets{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:13px}.presets button,.view-mode button{font:inherit;border:1px solid #355266;background:#1d3547;color:#c9dce9;border-radius:8px;cursor:pointer;padding:7px 8px}.presets button:hover,.view-mode button:hover{background:#2b4c61}.view-mode button.active{border-color:#7bc6dd;background:#275369;color:#f7fcff}.angle-row{margin:9px 0}.angle-row label{display:flex;justify-content:space-between;color:#d6e7f4}.angle-row output{font-variant-numeric:tabular-nums;color:var(--gold)}.switch{display:flex;align-items:center;gap:9px;font-size:12px;color:#bcd3e2;margin-top:18px;cursor:pointer}.switch input{accent-color:var(--blue)}
+.stage{overflow:hidden;padding:14px 15px 17px}.stage-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px}.view-mode{display:flex;gap:6px}.view-mode button{font-size:12px;padding:7px 10px}.canvas-controls{position:absolute;top:12px;right:14px;display:flex;gap:6px;z-index:4}.canvas-controls button{font-size:12px;padding:7px 10px;background:rgba(22,48,68,.92);backdrop-filter:blur(3px)}.canvas-wrap{position:relative;border:1px solid #244051;border-radius:12px;overflow:hidden;background:radial-gradient(ellipse at 50% 47%,#173449 0%,#102336 34%,#0a1a2a 72%,#091522 100%)}canvas{width:100%;height:480px;display:block;touch-action:none;cursor:crosshair}.canvas-note{pointer-events:none;position:absolute;left:15px;bottom:13px;color:#93b2c5;font-size:11px}.axes-note{position:absolute;right:14px;top:54px;color:#87a6b9;font-size:11px}.legend{display:flex;gap:13px 18px;flex-wrap:wrap;margin:12px 0 5px;font-size:12px;color:#c4d7e4}.legend span{display:inline-flex;align-items:center;gap:6px}.dot{width:10px;height:10px;border-radius:99px;display:inline-block}@media (max-width:640px){.canvas-controls{left:12px;right:12px;top:12px;justify-content:flex-end;flex-wrap:wrap}.axes-note{top:54px}}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:13px}.stat{background:#10283a;border:1px solid #29475b;padding:10px 12px;border-radius:10px}.stat .label{color:#9bb3c7;font-size:12px}.stat .value{font-size:22px;letter-spacing:-.4px;font-weight:750;font-variant-numeric:tabular-nums;white-space:nowrap}.stat small{font-size:11px;color:#93aabe;font-weight:400}.stat.red .value{color:var(--red)}.stat.green .value{color:var(--teal)}.stat.purple .value{color:var(--purple)}.below{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-top:16px}.panel{padding:17px 20px}.panel h3{font-size:14px;margin:0 0 12px}.mat{display:flex;align-items:center;gap:6px;justify-content:center}.bracket{align-self:stretch;border-left:2px solid #8cb3c7;border-top:2px solid #8cb3c7;border-bottom:2px solid #8cb3c7;width:8px}.bracket.r{transform:rotate(180deg)}.matrix{display:grid;grid-template-columns:repeat(3,minmax(55px,1fr));gap:10px;text-align:center;font-family:Cambria,Times New Roman,serif;font-size:19px;min-width:0;font-variant-numeric:tabular-nums}.micro{margin:12px 0 0;color:#a9c1d1;font-size:12px}.math-line{font-family:Cambria,Times New Roman,serif;font-size:16px;color:#e1eff7;margin:5px 0}.principal{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:8px 0}.principal b{font-weight:750;font-size:17px;font-variant-numeric:tabular-nums}.principal .single{flex:1;padding:9px 10px;border:1px solid #315065;background:#102a3e;border-radius:10px;text-align:center;min-width:80px}.principal .single span{display:block;color:#99b6c9;font-size:12px}.fine{font-size:12px;line-height:1.6;color:#a4bbcb}.footer{margin-top:15px;color:#819eaf;font-size:11px}.key{color:var(--gold)}
+
+.stress-row.selected-stress{background:linear-gradient(90deg,rgba(255,206,117,.1),transparent);border-left:3px solid #ffd184;padding-left:9px;margin-left:-12px}
+/* Matriz destacada: visible a la vez que los controles y la esfera. */
+.tensor-feature{display:grid;grid-template-columns:minmax(125px,1fr) auto minmax(135px,1fr);align-items:center;gap:20px;background:linear-gradient(115deg,#102b3e,#112338 60%,#132a3b);border:1px solid #385b70;border-radius:13px;padding:14px 18px;margin:10px 0 14px;min-height:183px}
+.tensor-feature h3{font-size:15px;margin:3px 0 6px;color:#f0f7fe;line-height:1.25}.tensor-feature .overline{font-size:10px;color:#83b8d5;font-weight:800;letter-spacing:1.5px}.tensor-feature .tensor-info{font-size:12px;line-height:1.5;color:#9ebbd0;margin:0;max-width:230px}.tensor-expression{display:flex;align-items:center;justify-content:center;gap:12px}.tensor-sigma{font:italic 32px Cambria,'Times New Roman',serif;color:#def5ff;white-space:nowrap}.tensor-board{display:flex;flex-direction:column;align-items:center;gap:4px}.tensor-col-labels{display:grid;grid-template-columns:repeat(3,76px);column-gap:5px;padding-left:10px;padding-right:10px;text-align:center;color:#7ea7be;font:italic 13px Cambria,'Times New Roman',serif}.tensor-matrix-body{display:flex;align-items:center;gap:5px}.tensor-row-labels{display:grid;grid-template-rows:repeat(3,36px);row-gap:6px;text-align:right;color:#7ea7be;font:italic 13px Cambria,'Times New Roman',serif;align-items:center;margin-right:3px}.tensor-brace{align-self:stretch;width:8px;border:2px solid #b1d4e5}.tensor-brace.left{border-right:0;border-radius:4px 0 0 4px}.tensor-brace.right{border-left:0;border-radius:0 4px 4px 0}.tensor-matrix{display:grid;grid-template-columns:repeat(3,76px);grid-template-rows:repeat(3,36px);gap:6px 5px}.tensor-entry{border-radius:7px;border:1px solid #325469;background:#0a2132;color:#dbeeff;text-align:center;font:600 19px/1 Cambria,'Times New Roman',serif;font-variant-numeric:tabular-nums;cursor:pointer;padding:0 4px;min-width:0;transition:background .12s ease,border-color .12s ease,box-shadow .12s ease}.tensor-entry.normal{color:#72dfc7}.tensor-entry.shear{color:#ffd184}.tensor-entry.active{background:#234c62;border-color:#fff0b0;box-shadow:0 0 0 1px rgba(255,220,141,.7),0 0 13px rgba(255,201,103,.16);color:#fff}.tensor-entry:focus-visible{outline:2px solid #fff;outline-offset:3px}.tensor-units{font-size:12px;color:#91b2c8;align-self:flex-end;margin-bottom:14px}.tensor-side-help{font-size:12px;line-height:1.6;color:#a8c0d2;margin:0}.tensor-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.tensor-tag{font-size:11px;display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border:1px solid #345266;border-radius:30px;white-space:nowrap}.tensor-tag .marker{height:7px;width:7px;border-radius:100%;background:#72dfc7}.tensor-tag.shear .marker{background:#ffd184}.tensor-focus-label{color:#d6ecf9;font-size:12px;margin-top:8px;min-height:17px}.tensor-relationship{font:italic 25px Cambria,'Times New Roman',serif;text-align:center;color:#cceaff;margin:12px auto 16px;background:#11283a;padding:10px 12px;border:1px solid #294658;border-radius:10px;max-width:340px}
+@media(max-width:1170px){.tensor-feature{grid-template-columns:minmax(95px,1fr) auto;gap:12px}.tensor-details{grid-column:1/-1;display:flex;align-items:center;gap:15px}.tensor-details .tensor-tags{margin:0}.tensor-feature{padding:14px 12px}}
+@media(max-width:580px){.tensor-feature{grid-template-columns:1fr;gap:9px;padding:13px 8px}.tensor-feature h3{margin-bottom:1px}.tensor-feature .tensor-info{max-width:none}.tensor-expression{gap:5px;justify-content:center}.tensor-sigma{font-size:24px}.tensor-col-labels,.tensor-matrix{grid-template-columns:repeat(3,minmax(0,1fr));width:min(228px,67vw)}.tensor-matrix{gap:5px 3px}.tensor-entry{font-size:clamp(15px,4vw,19px)}.tensor-details{grid-column:auto;display:block}.tensor-feature .tensor-tags{margin-top:5px}.tensor-row-labels{margin-right:0}}
+
+@media(max-width:900px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr;column-gap:18px}.side h2,.side .hint,.side .subheading,.side .presets,.side .switch{grid-column:1/-1}.side .stress-row{min-width:0}.side .subheading{margin-top:13px}.below{grid-template-columns:1fr}}@media(max-width:580px){.shell{padding:18px 10px 30px}.head{display:block}.head .pill{display:inline-block;margin-top:10px}.side{display:block}.stats{grid-template-columns:repeat(2,1fr)}canvas{height:380px}.stage{padding:10px}.view-mode{width:100%}.view-mode button{flex:1}.panel{padding:14px}}
+.brandline{display:flex;justify-content:space-between;align-items:baseline;gap:8px 22px;flex-wrap:wrap}.byline{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:12px;color:#a9c8db}.byline strong{color:#e5f4ff;font-weight:700}.byline a{color:#82d3f2;text-decoration:none}.byline a:hover,.byline a:focus-visible{text-decoration:underline}.byline-separator{color:#7394aa}@media(max-width:600px){.brandline{align-items:flex-start;flex-direction:column;gap:8px}.byline{gap:5px 8px}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="brandline"><div class="eyebrow">MECÁNICA DE MEDIOS CONTINUOS / LABORATORIO 3D</div><div class="byline"><strong>Francisco Goitia</strong><span class="byline-separator" aria-hidden="true">·</span><a href="mailto:francisco.goitia@upc.edu">francisco.goitia@upc.edu</a></div></div>
+  <div class="head"><div><h1>Tensor de tensiones de Cauchy</h1><p class="sub">Explora la tracción sobre cualquier plano que pasa por un punto.</p></div><div class="pill">Interactivo · sin instalación · MPa</div></div>
+  <main class="layout">
+    <aside class="side">
+      <h2>Componentes del tensor</h2><p class="hint">Edita los valores o desplaza los controles. La matriz se mantiene simétrica.</p>
+      <div id="stressInputs"></div>
+      <div class="presets"><button data-preset="general">Estado general</button><button data-preset="uniaxial">Tracción simple</button><button data-preset="shear">Corte puro</button><button data-preset="hydro">Hidrostático</button></div>
+      <div class="subheading">ORIENTACIÓN DEL PLANO</div>
+      <div class="angle-row"><label for="theta">Ángulo polar θ <output id="thetaVal">55°</output></label><input id="theta" type="range" min="0" max="180" value="55" step="1"></div>
+      <div class="angle-row"><label for="phi">Ángulo azimutal φ <output id="phiVal">25°</output></label><input id="phi" type="range" min="0" max="360" value="25" step="1"></div>
+      <label class="switch"><input id="principalAxes" type="checkbox"> Mostrar direcciones principales</label>
+      <p class="fine">θ se mide desde +Z y φ desde +X hacia +Y. Arrastra sobre la esfera para escoger una normal diferente.</p>
+    </aside>
+    <section class="stage">
+      <div class="stage-top"><div><h2>Esfera de tracciones</h2><p class="hint" style="margin:1px 0 5px">Vectores de Cauchy para distintas orientaciones de la normal.</p></div></div>
+      <div class="tensor-feature" aria-label="Matriz del tensor de tensiones actualizada en tiempo real">
+        <div class="tensor-intro">
+          <div class="overline">EN TIEMPO REAL</div>
+          <h3>Tensor de tensiones</h3>
+          <p class="tensor-info">Los nueve términos de la matriz cambian al mover las barras.</p>
+          <div class="tensor-focus-label" id="tensorSelection" aria-live="polite">Selecciona una componente para resaltarla.</div>
+        </div>
+        <div class="tensor-expression">
+          <div class="tensor-sigma">σ =</div>
+          <div class="tensor-board">
+            <div class="tensor-col-labels"><span>x</span><span>y</span><span>z</span></div>
+            <div class="tensor-matrix-body">
+              <div class="tensor-row-labels"><span>x</span><span>y</span><span>z</span></div>
+              <div class="tensor-brace left" aria-hidden="true"></div>
+              <div class="tensor-matrix" id="matrix" aria-label="Matriz simétrica de tensiones, en MPa"></div>
+              <div class="tensor-brace right" aria-hidden="true"></div>
+            </div>
+          </div>
+          <span class="tensor-units">MPa</span>
+        </div>
+        <div class="tensor-details">
+          <p class="tensor-side-help">Las componentes cortantes aparecen dos veces por la simetría del tensor.</p>
+          <div class="tensor-tags"><span class="tensor-tag"><i class="marker"></i> Normales</span><span class="tensor-tag shear"><i class="marker"></i> Cortantes</span></div>
+        </div>
+      </div>
+      <div class="canvas-wrap"><div class="canvas-controls view-mode"><button class="active" data-mode="select">↗ Mover normal</button><button data-mode="orbit">⟳ Girar vista</button></div><canvas id="sphere" aria-label="Esfera interactiva de tracciones de Cauchy" role="img"></canvas><span class="axes-note">X · Y · Z</span><div class="canvas-note" id="canvasNote">Arrastra para mover el extremo de n. Usa «Girar vista» para orbitar.</div></div>
+      <div class="legend"><span><i class="dot" style="background:var(--blue)"></i> Estado tensional sobre la esfera</span><span><i class="dot" style="background:var(--gold)"></i> Normal n</span><span><i class="dot" style="background:var(--red)"></i> Tracción t</span><span><i class="dot" style="background:var(--teal)"></i> Componente normal</span><span><i class="dot" style="background:var(--purple)"></i> Componente tangencial</span></div>
+      <div class="stats">
+        <div class="stat green"><div class="label">Tensión normal, σₙ</div><div class="value" id="sigmaN">–</div><small>MPa, con signo</small></div>
+        <div class="stat purple"><div class="label">Tensión tangencial, τₙ</div><div class="value" id="tauN">–</div><small>MPa, módulo</small></div>
+        <div class="stat red"><div class="label">Tracción resultante, |t|</div><div class="value" id="tMod">–</div><small>MPa</small></div>
+      </div>
+    </section>
+  </main>
+  <section class="below">
+    <div class="panel"><h3>Dirección y tracción seleccionadas</h3><div class="tensor-relationship">t(n) = σ · n</div><p class="math-line" id="normalVector" style="text-align:center;margin-top:14px">n = (–, –, –)</p><p class="math-line" id="tractionVector" style="text-align:center">t = (–, –, –) MPa</p><p class="micro">El plano mostrado es tangente a la esfera y perpendicular al vector n. El vector t = σn es la tracción que actúa sobre ese plano.</p></div>
+    <div class="panel"><h3>Tensiones principales e invariantes</h3><div class="principal"><div class="single"><span>σ₁ (MPa)</span><b id="p1">–</b></div><div class="single"><span>σ₂ (MPa)</span><b id="p2">–</b></div><div class="single"><span>σ₃ (MPa)</span><b id="p3">–</b></div></div><div class="principal"><div class="single"><span>I₁ = tr(σ)</span><b id="i1">–</b></div><div class="single"><span>von Mises (MPa)</span><b id="vm">–</b></div></div><p class="micro">En direcciones principales, la tracción no tiene componente tangencial: τₙ = 0. El valor de von Mises se obtiene del tensor desviador.</p></div>
+  </section>
+  <div class="footer">Visualización docente. Las longitudes de los vectores se escalan para facilitar su lectura; las tensiones calculadas se indican numéricamente en MPa. Convención: tracción positiva.</div>
+</div>
+<script>
+(function(){'use strict';
+  const $=id=>document.getElementById(id);
+  const keys=[['sx','σₓ'],['sy','σᵧ'],['sz','σ𝓏'],['txy','τₓᵧ'],['txz','τₓ𝓏'],['tyz','τᵧ𝓏']];
+  const presets={general:{sx:80,sy:35,sz:-10,txy:25,txz:12,tyz:-18},uniaxial:{sx:100,sy:0,sz:0,txy:0,txz:0,tyz:0},shear:{sx:0,sy:0,sz:0,txy:60,txz:0,tyz:0},hydro:{sx:-50,sy:-50,sz:-50,txy:0,txz:0,tyz:0}};
+  let st={...presets.general},theta=55*Math.PI/180,phi=25*Math.PI/180;
+  let n=[Math.sin(theta)*Math.cos(phi),Math.sin(theta)*Math.sin(phi),Math.cos(theta)];
+  let yaw=38*Math.PI/180,pitch=28*Math.PI/180,mode='select',drag=null,showPrincipal=false;
+  const canvas=$('sphere'),ctx=canvas.getContext('2d'); let W=0,H=0,DPR=1,cx=0,cy=0,R=0;
+  const plus=(a,b)=>a.map((v,i)=>v+b[i]),minus=(a,b)=>a.map((v,i)=>v-b[i]),times=(a,s)=>a.map(v=>v*s),dot=(a,b)=>a.reduce((s,v,i)=>s+v*b[i],0),norm=a=>Math.hypot(...a),unit=a=>times(a,1/(norm(a)||1));
+  const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+  const fmt=(x,d=1)=>Number.isFinite(x)?(Math.abs(x)<Math.pow(10,-d)/2?0:x).toFixed(d):'–';
+  function matrix(){return [[st.sx,st.txy,st.txz],[st.txy,st.sy,st.tyz],[st.txz,st.tyz,st.sz]]}
+  const matrixKeys=['sx','txy','txz','txy','sy','tyz','txz','tyz','sz'];
+  const matrixNames={sx:'σₓ',sy:'σᵧ',sz:'σ𝓏',txy:'τₓᵧ',txz:'τₓ𝓏',tyz:'τᵧ𝓏'};
+  const matrixCells=matrixKeys.map((key,i)=>{const btn=document.createElement('button');btn.type='button';btn.className='tensor-entry '+(i===0||i===4||i===8?'normal':'shear');btn.dataset.key=key;btn.title='Ir al control '+matrixNames[key];btn.addEventListener('click',()=>{highlightStress(key);const input=$('range_'+key);if(input){input.focus({preventScroll:true});input.scrollIntoView({behavior:'smooth',block:'center'});}});$('matrix').appendChild(btn);return btn});
+  let selectedStress=null;
+  function highlightStress(key){selectedStress=key;
+    matrixCells.forEach(btn=>btn.classList.toggle('active',btn.dataset.key===key));
+    document.querySelectorAll('.stress-row').forEach(row=>row.classList.toggle('selected-stress',row.dataset.key===key));
+    $('tensorSelection').textContent=key?'Componente seleccionada: '+matrixNames[key]:'Selecciona una componente para resaltarla.';
+  }
+  function vec(A,v){return A.map(row=>dot(row,v))}
+  function eigen(A){let a=A.map(r=>r.slice()),v=[[1,0,0],[0,1,0],[0,0,1]];for(let k=0;k<40;k++){
+    let p=0,q=1,m=Math.abs(a[0][1]);for(let i=0;i<3;i++)for(let j=i+1;j<3;j++)if(Math.abs(a[i][j])>m){m=Math.abs(a[i][j]);p=i;q=j}
+    if(m<1e-12)break;const apq=a[p][q],tau=(a[q][q]-a[p][p])/(2*apq),tt=(tau>=0?1:-1)/(Math.abs(tau)+Math.sqrt(1+tau*tau)),c=1/Math.sqrt(1+tt*tt),s=tt*c;
+    a[p][p]-=tt*apq;a[q][q]+=tt*apq;a[p][q]=a[q][p]=0;
+    for(let i=0;i<3;i++){if(i!==p&&i!==q){let aip=a[i][p],aiq=a[i][q];a[i][p]=a[p][i]=c*aip-s*aiq;a[i][q]=a[q][i]=s*aip+c*aiq}let vip=v[i][p],viq=v[i][q];v[i][p]=c*vip-s*viq;v[i][q]=s*vip+c*viq}
+  }return [0,1,2].map(j=>({val:a[j][j],dir:unit([v[0][j],v[1][j],v[2][j]])})).sort((x,y)=>y.val-x.val)}
+  function basis(){let cyaw=Math.cos(yaw),syaw=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);return {right:[cyaw,-syaw,0],up:[-syaw*sp,-cyaw*sp,cp],front:[syaw*cp,cyaw*cp,sp]}}
+  function project(v){let b=basis();return {x:cx+R*dot(v,b.right),y:cy-R*dot(v,b.up),z:dot(v,b.front)}}
+  function toSphere(px,py){let xx=(px-cx)/R,yy=(cy-py)/R,rr=xx*xx+yy*yy;if(rr>1.06)return null; if(rr>1){let scale=1/Math.sqrt(rr);xx*=scale;yy*=scale;rr=1}let zz=Math.sqrt(Math.max(0,1-rr)),b=basis();return unit(plus(plus(times(b.right,xx),times(b.up,yy)),times(b.front,zz)))}
+  function line3(a,b,color,width=1,opacity=1,dash=[]){let aa=project(a),bb=project(b);ctx.save();ctx.strokeStyle=color;ctx.globalAlpha=opacity;ctx.lineWidth=width;ctx.setLineDash(dash);ctx.beginPath();ctx.moveTo(aa.x,aa.y);ctx.lineTo(bb.x,bb.y);ctx.stroke();ctx.restore()}
+  function arrow(a,b,color,width=2,opacity=1,head=6){let p=project(a),q=project(b),dx=q.x-p.x,dy=q.y-p.y,len=Math.hypot(dx,dy);if(len<3)return;let ux=dx/len,uy=dy/len;ctx.save();ctx.strokeStyle=color;ctx.fillStyle=color;ctx.globalAlpha=opacity;ctx.lineWidth=width;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();ctx.beginPath();ctx.moveTo(q.x,q.y);ctx.lineTo(q.x-ux*head-uy*head*.48,q.y-uy*head+ux*head*.48);ctx.lineTo(q.x-ux*head+uy*head*.48,q.y-uy*head-ux*head*.48);ctx.closePath();ctx.fill();ctx.restore()}
+  function label3(v,s,color){let p=project(v);ctx.fillStyle=color;ctx.font='bold 14px system-ui';ctx.textAlign='center';ctx.fillText(s,p.x,p.y-8)}
+  function resize(){let bb=canvas.getBoundingClientRect();DPR=Math.min(window.devicePixelRatio||1,2);W=Math.max(300,bb.width);H=Math.max(280,bb.height);canvas.width=Math.round(W*DPR);canvas.height=Math.round(H*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);cx=W*.51;cy=H*.51;R=Math.min(W*.32,H*.35);draw()}
+  function draw(){if(!W)return;ctx.clearRect(0,0,W,H);let A=matrix(), eig=eigen(A),maxAbs=Math.max(30,...eig.map(e=>Math.abs(e.val))),scale=.72/maxAbs;
+    // Orthographic sphere and soft directional shading.
+    let g=ctx.createRadialGradient(cx-R*.24,cy-R*.31,R*.06,cx,cy,R*1.05);g.addColorStop(0,'#286079');g.addColorStop(.55,'#173e55');g.addColorStop(1,'#0b2436');ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();ctx.strokeStyle='#5687a4';ctx.globalAlpha=.85;ctx.lineWidth=1.5;ctx.stroke();ctx.globalAlpha=1;
+    // Latitude and longitude curves.
+    const grids=[];for(let lat=-60;lat<=60;lat+=30){let pts=[];for(let j=0;j<=180;j++){let lon=j*Math.PI/90,lt=lat*Math.PI/180;pts.push([Math.cos(lt)*Math.cos(lon),Math.cos(lt)*Math.sin(lon),Math.sin(lt)])}grids.push(pts)}
+    for(let lng=0;lng<180;lng+=30){let pts=[];for(let j=0;j<=180;j++){let lt=-Math.PI/2+j*Math.PI/180,l=lng*Math.PI/180;pts.push([Math.cos(lt)*Math.cos(l),Math.cos(lt)*Math.sin(l),Math.sin(lt)])}grids.push(pts)}
+    for(const pts of grids){for(let j=1;j<pts.length;j++){let mid=times(plus(pts[j-1],pts[j]),.5),visible=dot(mid,basis().front)>0;line3(pts[j-1],pts[j],visible?'#6994ad':'#416076',.7,visible?.30:.13)}}
+    // 3D axes.
+    for(const [v,t,c] of [[[1,0,0],'X','#f5a477'],[[0,1,0],'Y','#83deb9'],[[0,0,1],'Z','#8dbafe']]){line3(times(v,-1.22),times(v,1.22),c,1,.36,[4,5]);label3(times(v,1.30),t,c)}
+    // Fibonacci sampling gives approximately even distributed surface tractions.
+    let pts=[];const N=132,ga=Math.PI*(3-Math.sqrt(5));for(let i=0;i<N;i++){let z=1-2*(i+.5)/N,r=Math.sqrt(Math.max(0,1-z*z)),ang=ga*i;let u=[r*Math.cos(ang),r*Math.sin(ang),z];pts.push({u,depth:dot(u,basis().front)})}
+    pts.sort((a,b)=>a.depth-b.depth);for(const {u,depth} of pts){const t=vec(A,u);let a=times(u,1.012),b=plus(a,times(t,scale*.62));arrow(a,b,depth>0?'#76cfea':'#5a9ab5',depth>0?1.2:.75,depth>0?.68:.18,4)}
+    // Principal eigenvectors (optional), both signs.
+    if(showPrincipal){const pc=['#f0b87c','#81ddbb','#c7a0ed'];eig.forEach((e,i)=>{let u=e.dir;line3(times(u,-1.3),times(u,1.3),pc[i],2,.9,[5,3]);label3(times(u,1.34),'σ'+(i+1),pc[i])})}
+    // Selected tangent plane.
+    let u=unit(cross(n,Math.abs(n[2])>.94?[0,1,0]:[0,0,1])),v=cross(n,u),base=times(n,1.018),corners=[];for(const [a,b] of [[-1,-1],[1,-1],[1,1],[-1,1]])corners.push(plus(base,plus(times(u,a*.27),times(v,b*.27))));
+    ctx.save();ctx.fillStyle='rgba(255,199,95,.18)';ctx.strokeStyle='rgba(255,209,118,.8)';ctx.lineWidth=1.2;ctx.beginPath();corners.forEach((p,i)=>{let q=project(p);i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y)});ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
+    let t=vec(A,n),sn=dot(n,t),shear=minus(t,times(n,sn)),ps=project(base);arrow([0,0,0],times(n,1.18),'#ffc75f',3.6,1,10);arrow(base,plus(base,times(t,scale)),'#fa7e88',3.3,1,9);arrow(base,plus(base,times(n,sn*scale)),'#57d6aa',2.8,.98,8);
+    let compStart=plus(base,times(n,sn*scale));arrow(compStart,plus(compStart,times(shear,scale)),'#c99bf8',2.8,.96,8);
+    ctx.save();ctx.beginPath();ctx.arc(ps.x,ps.y,5,0,2*Math.PI);ctx.fillStyle='#ffd989';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#082536';ctx.stroke();ctx.restore();label3(times(n,1.31),'n','#ffd379');
+    let end=project(plus(base,times(t,scale)));ctx.font='bold 13px system-ui';ctx.fillStyle='#ffabb0';ctx.fillText('t',end.x+10,end.y-8);
+    // Reference circle compass.
+    ctx.save();ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.strokeStyle='rgba(141,198,222,.5)';ctx.lineWidth=1.2;ctx.stroke();ctx.restore();
+  }
+  function update(){const A=matrix(),t=vec(A,n),sn=dot(n,t),shear=minus(t,times(n,sn)),tau=norm(shear),p=eigen(A),trace=st.sx+st.sy+st.sz;
+    let dev=A.map((row,i)=>row.map((x,j)=>x-(i===j?trace/3:0))),j2=.5*dev.flat().reduce((s,x)=>s+x*x,0);
+    $('sigmaN').textContent=fmt(sn);$('tauN').textContent=fmt(tau);$('tMod').textContent=fmt(norm(t));
+    matrixCells.forEach((cell,i)=>{const v=A[Math.floor(i/3)][i%3];cell.textContent=Number.isInteger(v)?fmt(v,0):String(Number(v.toFixed(2)));cell.setAttribute('aria-label',matrixNames[matrixKeys[i]]+': '+cell.textContent+' MPa. Ir al control');});$('normalVector').textContent='n = ('+n.map(x=>fmt(x,3)).join('; ')+')';$('tractionVector').textContent='t = ('+t.map(x=>fmt(x,2)).join('; ')+') MPa';
+    p.forEach((e,i)=>$('p'+(i+1)).textContent=fmt(e.val));$('i1').textContent=fmt(trace);$('vm').textContent=fmt(Math.sqrt(Math.max(0,3*j2)));
+    theta=Math.acos(Math.max(-1,Math.min(1,n[2])));phi=(Math.atan2(n[1],n[0])+2*Math.PI)%(2*Math.PI);
+    $('theta').value=String(Math.round(theta*180/Math.PI));$('phi').value=String(Math.round(phi*180/Math.PI));$('thetaVal').textContent=Math.round(theta*180/Math.PI)+'°';$('phiVal').textContent=Math.round(phi*180/Math.PI)+'°';draw()
+  }
+  function setAngles(){const th=Number($('theta').value)*Math.PI/180,ph=Number($('phi').value)*Math.PI/180;n=[Math.sin(th)*Math.cos(ph),Math.sin(th)*Math.sin(ph),Math.cos(th)];update()}
+  const inputArea=$('stressInputs');keys.forEach(([key,sym])=>{let div=document.createElement('div');div.className='stress-row';div.dataset.key=key;div.innerHTML='<div class="stress-row-top"><label class="math" for="num_'+key+'">'+sym+'</label><div class="num"><input type="number" id="num_'+key+'" step="1" value="'+st[key]+'"><span class="unit">MPa</span></div></div><input type="range" id="range_'+key+'" min="-150" max="150" step="1" value="'+st[key]+'">';inputArea.appendChild(div);
+    let r=$('range_'+key),a=$('num_'+key);r.addEventListener('focus',()=>highlightStress(key));a.addEventListener('focus',()=>highlightStress(key));r.addEventListener('input',()=>{st[key]=Number(r.value);a.value=st[key];highlightStress(key);update()});a.addEventListener('input',()=>{let f=Number(a.value);if(a.value.trim()!==''&&Number.isFinite(f)){st[key]=Math.max(-10000,Math.min(10000,f));r.value=st[key];highlightStress(key);update()}})});
+  function refreshControls(){for(const [k] of keys){$('num_'+k).value=st[k];$('range_'+k).value=st[k]}update()}
+  document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{st={...presets[b.dataset.preset]};refreshControls()}));
+  $('theta').addEventListener('input',setAngles);$('phi').addEventListener('input',setAngles);
+  $('principalAxes').addEventListener('change',e=>{showPrincipal=e.target.checked;draw()});
+  document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(c=>c.classList.toggle('active',c===b));canvas.style.cursor=mode==='orbit'?'grab':'crosshair';$('canvasNote').textContent=mode==='orbit'?'Arrastra para girar la vista tridimensional.':'Arrastra para cambiar la normal al plano.'}));
+  function position(e){let r=canvas.getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top]}
+  canvas.addEventListener('pointerdown',e=>{const [x,y]=position(e),useOrbit=mode==='orbit'||e.shiftKey||!toSphere(x,y);drag={kind:useOrbit?'orbit':'select',x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);if(!useOrbit){n=toSphere(x,y);update()}e.preventDefault()});
+  canvas.addEventListener('pointermove',e=>{if(!drag)return;if(drag.kind==='orbit'){yaw+=(e.clientX-drag.x)*.008;pitch=Math.max(-1.4,Math.min(1.4,pitch+(e.clientY-drag.y)*.008));drag.x=e.clientX;drag.y=e.clientY;draw()}else{let [x,y]=position(e),next=toSphere(x,y);if(next){n=next;update()}}e.preventDefault()});
+  function up(){drag=null}canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
+  window.addEventListener('resize',resize);if(window.ResizeObserver)new ResizeObserver(resize).observe(canvas);
+  refreshControls();resize();
+})();
+</script>
+</body></html>
